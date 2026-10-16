@@ -1,6 +1,6 @@
 # Release readiness
 
-Reviewed October 16, 2026. This is an alpha preparation record, not a claim that a public launch or production deployment occurred.
+Reviewed October 16, 2026. The clean source is published at https://github.com/middlerange/open-crm. The initial GitHub Verify workflow passed, including isolated PostgreSQL installation, CRM, role-boundary, mail, and security suites.
 
 ## Implemented
 
@@ -29,9 +29,9 @@ Reviewed October 16, 2026. This is an alpha preparation record, not a claim that
 
 ## Remaining gates
 
-1. **Public repository and deploy-button verification:** the button targets `https://github.com/middlerange/open-crm`. Publish the prepared source with its license notices, then test the complete dashboard flow in a separate Cloudflare account. A CLI dry run does not verify that hosted onboarding flow.
+1. **Public repository and deploy-button verification:** the button targets `https://github.com/middlerange/open-crm`. The source and license notices are published. Test the complete deploy-button dashboard flow in a separate Cloudflare account. A CLI dry run does not verify that hosted onboarding flow.
 2. **Docker execution:** Compose configuration and native Node installation were verified; image build/run was not possible without a running Docker daemon.
-3. **Publication secret/history scan:** this workspace has no Git metadata. Exported files can be inspected, but no historical commit scan is possible here. Before publication, scan the actual repository and any imported history, enable secret scanning, and confirm a working private security-reporting channel.
+3. **Publication secret/history scan:** the public repository began with a reviewed clean export and no imported history. Its initial source scan found no credentials or private deployment/research data. Enable secret scanning and confirm a working private security-reporting channel; re-scan any history imported later.
 4. **Third-party dependency provenance:** installed dependencies retain their own licenses. Review dependency notices for the exact distributed artifact; adding an Apache license does not grant rights to third-party code.
 
-Cloudflare Email domain verification and PostgreSQL provisioning are operator setup steps. The basic app does not require email, and sending remains disabled by default. No production database, Worker deployment, repository visibility, or outreach was changed during this preparation.
+Cloudflare Email domain verification and PostgreSQL provisioning are operator setup steps. The basic app does not require email, and sending remains disabled by default. Deployment configuration and operational status belong to the installation owner; no credentials or private installation values are published here.
