@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orbit extension LinkedIn fixture</title>
+    <link rel="stylesheet" href="../content.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #f3f2ef;
+        color: #191919;
+        font-family: Arial, sans-serif;
+      }
+      main {
+        width: 620px;
+        margin: 42px auto;
+      }
+      article {
+        overflow: hidden;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        background: white;
+      }
+      [data-testid="mainFeed"] {
+        margin-top: 24px;
+      }
+      [role="listitem"] {
+        overflow: hidden;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        background: white;
+      }
+      [role="listitem"] h2 {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+      }
+      .current-post-copy,
+      .current-post-header,
+      .current-comment {
+        padding: 16px;
+      }
+      .current-actions {
+        display: flex;
+        justify-content: space-around;
+        border-top: 1px solid #eee;
+      }
+      .current-actions > :is(button, a) {
+        min-height: 44px;
+        padding: 0 16px;
+        border: 0;
+        color: inherit;
+        background: transparent;
+      }
+      .actor,
+      .update-components-text,
+      .social-details-social-activity,
+      .comments-comment-item {
+        padding: 16px;
+      }
+      .update-components-actor__name {
+        font-weight: 700;
+      }
+      .social-details-social-activity {
+        display: flex;
+        gap: 20px;
+        border-top: 1px solid #eee;
+        color: #666;
+      }
+      .feed-shared-social-action-bar {
+        display: flex;
+        justify-content: space-around;
+        border-top: 1px solid #eee;
+      }
+      .feed-shared-social-action-bar > button {
+        min-height: 44px;
+        border: 0;
+        background: transparent;
+      }
+      .comments-comment-item {
+        margin: 10px 16px;
+        border-radius: 8px;
+        background: #f2f2f2;
+      }
+      .comments-comment-meta__description-title {
+        font-weight: 700;
+      }
+      .comments-comment-meta__description-subtitle,
+      .artdeco-entity-lockup__subtitle {
+        color: #666;
+        font-size: 13px;
+      }
+      .artdeco-modal {
+        position: fixed;
+        right: 500px;
+        bottom: 20px;
+        width: 320px;
+        padding: 18px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background: white;
+      }
+      .reaction-scroll {
+        height: 72px;
+        overflow-y: auto;
+      }
+      .reaction-scroll::after {
+        display: block;
+        height: 90px;
+        content: "";
+      }
+      .artdeco-entity-lockup {
+        padding: 10px;
+      }
+      #run-current-scan {
+        position: fixed;
+        bottom: 12px;
+        left: 12px;
+      }
+    </style>
+    <script>
+      globalThis.chrome ??= {};
+      globalThis.chrome.runtime = {
+        getURL: (path) => `../${path}`,
+      };
+      globalThis.chrome.storage = {
+        local: {
+          get: async () => ({ competitorName: "Canny" }),
+          set: async () => undefined,
+        },
+      };
+      Object.assign(globalThis.chrome.runtime, {
+        onMessage: {
+          addListener: (listener) => {
+            globalThis.orbitRuntimeListeners ??= [];
+            globalThis.orbitRuntimeListeners.push(listener);
+          },
+        },
+        sendMessage: async (message) => {
+          globalThis.lastOrbitMessage = message;
+          document.documentElement.dataset.lastOrbitMessage = message.type;
+          if (message.type === "ORBIT_CONNECTION") {
+            return { connected: true, userName: "Mukesh", workspaceName: "Userorbit" };
+          }
+          if (message.type === "ORBIT_API") {
+            globalThis.lastOrbitPayload = message.body;
+            return { ok: true, data: { accepted: message.body.engagements.length, duplicates: 0 } };
+          }
+          return { ok: true };
+        },
+      });
+    </script>
+  </head>
+  <body>
+    <main>
+      <article class="feed-shared-update-v2" data-urn="urn:li:activity:999000111222333444">
+        <div class="actor">
+          <a href="https://www.linkedin.com/company/canny">
+            <span class="update-components-actor__name">Canny</span>
+          </a>
+          <time datetime="2026-08-06T09:00:00.000Z">1d</time>
+          <a href="https://www.linkedin.com/feed/update/urn:li:activity:999000111222333444">
+            View post
+          </a>
+        </div>
+        <div class="update-components-text">
+          We just launched a new customer-feedback workflow. What should we build next?
+        </div>
+        <div class="social-details-social-activity">
+          <a class="fixture-reaction-count" href="https://www.linkedin.com/feed">42 reactions</a>
+          <button class="social-details-social-counts__comments">3 comments</button>
+          <span class="social-details-social-counts__reposts">2 reposts</span>
+        </div>
+        <div class="feed-shared-social-action-bar">
+          <button>Like</button><button aria-label="Open reactions menu"></button
+          ><button>Comment</button><button>Repost</button>
+        </div>
+        <div class="comments-comment-item">
+          <a href="https://www.linkedin.com/in/alex-buyer">
+            <span class="comments-comment-meta__description-title">Alex Buyer</span>
+          </a>
+          <div class="comments-comment-meta__description-subtitle">VP Product at Acme · 2nd</div>
+          <div class="comments-comment-item__main-content">Does this integrate with Slack?</div>
+        </div>
+        <div class="comments-comment-item">
+          <a href="https://www.linkedin.com/in/sam-operator">
+            <span class="comments-comment-meta__description-title">Sam Operator</span>
+          </a>
+          <div class="comments-comment-meta__description-subtitle">
+            Founder at Linear Labs · 3rd
+          </div>
+          <div class="comments-comment-item__main-content">The roadmap view looks useful.</div>
+        </div>
+        <button id="load-fixture-comments" type="button">Load more comments</button>
+      </article>
+      <div data-testid="mainFeed" role="list">
+        <div role="listitem" componentkey="current-feed-post-fixture">
+          <h2><span>Feed post</span></h2>
+          <div class="current-post-header">
+            <a href="https://www.linkedin.com/in/taylor-founder"><p>Taylor Founder</p></a>
+            <p>Founder at Northstar</p>
+            <p>18m •</p>
+            <button aria-label="Open control menu for post by Taylor Founder"></button>
+          </div>
+          <p class="current-post-copy">
+            What is the hardest part of turning LinkedIn engagement into a useful lead signal?
+          </p>
+          <a href="https://www.linkedin.com/feed">25 reactions<span>25</span></a>
+          <div class="current-actions">
+            <button aria-label="Reaction button state: no reaction">Like</button>
+            <button>Comment</button>
+            <button>Repost</button>
+            <a href="https://www.linkedin.com/feed">Send</a>
+          </div>
+          <div class="current-comment">
+            <a href="https://www.linkedin.com/in/casey-buyer"><p>Casey Buyer • 2nd</p></a>
+            <p>VP Growth at Acme</p>
+            <p>3m</p>
+            <p>Can Orbit separate questions from lightweight reactions?</p>
+            <p>1 reaction</p>
+            <button aria-label="View more options for Casey Buyer’s comment."></button>
+          </div>
+        </div>
+      </div>
+    </main>
+    <div class="artdeco-modal" role="dialog" aria-label="Reactions" hidden>
+      <button class="artdeco-modal__dismiss" type="button" aria-label="Close reactions dialog">
+        Close
+      </button>
+      <div class="reaction-scroll">
+        <div class="artdeco-entity-lockup">
+          <a href="https://www.linkedin.com/in/jordan-leader">
+            <span class="artdeco-entity-lockup__title">Jordan Leader</span>
+          </a>
+          <div class="artdeco-entity-lockup__subtitle">Head of CX at Northstar · 2nd</div>
+          <img alt="Celebrate" />
+        </div>
+      </div>
+    </div>
+    <script>
+      const fixturePost = document.querySelector("article");
+      const fixtureDialog = document.querySelector("[aria-label='Reactions']");
+      fixturePost.querySelector(".fixture-reaction-count").addEventListener("click", (event) => {
+        event.preventDefault();
+        fixtureDialog.hidden = false;
+      });
+      fixtureDialog.querySelector(".artdeco-modal__dismiss").addEventListener("click", () => {
+        fixtureDialog.hidden = true;
+      });
+      fixtureDialog.querySelector(".reaction-scroll").addEventListener(
+        "scroll",
+        () => {
+          if (fixtureDialog.querySelector("[href$='/morgan-buyer']")) return;
+          fixtureDialog.querySelector(".reaction-scroll").insertAdjacentHTML(
+            "beforeend",
+            `<div class="artdeco-entity-lockup">
+              <a href="https://www.linkedin.com/in/morgan-buyer">
+                <span class="artdeco-entity-lockup__title">Morgan Buyer</span>
+              </a>
+              <div class="artdeco-entity-lockup__subtitle">VP Product at Acme · 2nd</div>
+              <img alt="Like" />
+            </div>`,
+          );
+        },
+        { once: true },
+      );
+      document.querySelector("#load-fixture-comments").addEventListener("click", (event) => {
+        event.currentTarget.insertAdjacentHTML(
+          "beforebegin",
+          `<div class="comments-comment-item">
+            <a href="https://www.linkedin.com/in/river-founder">
+              <span class="comments-comment-meta__description-title">River Founder</span>
+            </a>
+            <div class="comments-comment-meta__description-subtitle">Founder at Atlas · 2nd</div>
+            <div class="comments-comment-item__main-content">Can I connect this to our CRM?</div>
+          </div>`,
+        );
+        event.currentTarget.remove();
+      });
+    </script>
+    <script src="../content-script.js"></script>
+    <button id="run-current-scan" type="button">Run current-markup scan</button>
+    <script>
+      document.querySelector("#run-current-scan").addEventListener("click", () => {
+        document.querySelectorAll(".orbit-lead-action")[0]?.click();
+        globalThis.orbitRuntimeListeners?.[0]?.(
+          { type: "ORBIT_SCAN_LINKEDIN", mode: "both" },
+          null,
+          (result) => {
+            document.documentElement.dataset.currentScan = JSON.stringify(result);
+          },
+        );
+      });
+    </script>
+  </body>
+</html>

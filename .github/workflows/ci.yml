@@ -1,0 +1,50 @@
+name: Verify
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: orbit_test
+          POSTGRES_PASSWORD: orbit_ci_only
+          POSTGRES_DB: orbit_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U orbit_test -d orbit_test"
+          --health-interval 5s --health-timeout 5s --health-retries 12
+    env:
+      NODE_ENV: test
+      DATABASE_SSL: disable
+      DATABASE_URL: postgres://orbit_test:orbit_ci_only@127.0.0.1:5432/orbit_test
+      ORBIT_SECURITY_TEST_DATABASE_URL: postgres://orbit_test:orbit_ci_only@127.0.0.1:5432/orbit_test
+      ORBIT_INSTALL_TEST_DATABASE_URL: postgres://orbit_test:orbit_ci_only@127.0.0.1:5432/orbit_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: voidzero-dev/setup-vp@v1.21.2
+        with:
+          node-version: "22"
+          version: "0.1.24"
+          run-install: false
+      - run: vp install --frozen-lockfile
+      - run: vp run build:worker
+      - run: vp exec tsc --noEmit
+      - run: vp check
+      - run: vp run test:unit
+      - run: vp run test:deployment
+      - run: vp run test:extension-auth
+      - run: vp run test:extension-ui
+      # This first DB suite asserts the database is empty, then initializes it.
+      - run: vp run test:installation
+      - run: vp exec tsx --test --test-concurrency=1 server/crm-api.test.ts server/crm-transfer.test.ts server/agent-api.test.ts server/agent-access.test.ts server/mail-provider.test.ts server/mail-ingress.test.ts server/mail-backend.test.ts server/mail-security.test.ts server/workspace-auth.test.ts
+      - run: vp run test:security
+      - run: vp run build
+      - run: vp run build:worker
+      - run: vp exec wrangler deploy --dry-run --outdir .release/worker
+      - run: vp run release:prepare

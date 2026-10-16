@@ -1,0 +1,92 @@
+{
+  "name": "userorbit-gtm",
+  "version": "0.1.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/middlerange/open-crm.git"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently --kill-others -n web,api -c cyan,green \"vp dev --host 0.0.0.0\" \"vp exec node --env-file-if-exists=.env --import tsx --watch server/index.ts\"",
+    "build": "vp build && vp pack server/index.ts --format esm --out-dir dist-server --sourcemap",
+    "build:worker": "vp build && node scripts/prepare-worker-assets.mjs",
+    "dev:worker": "vp run build:worker && wrangler dev",
+    "deploy": "node scripts/deploy-cloudflare.mjs",
+    "cf:types": "wrangler types worker-env.d.ts",
+    "start": "node dist-server/index.mjs",
+    "db:migrate": "vp exec node --env-file-if-exists=.env --import tsx server/migrate.ts",
+    "db:seed": "vp exec node --env-file-if-exists=.env --import tsx server/seed.ts",
+    "db:setup": "vp run db:migrate && vp run db:seed",
+    "agent:key": "vp exec node --env-file-if-exists=.env --import tsx scripts/create-agent-api-key.ts",
+    "extension:configure": "node scripts/configure-extension.mjs",
+    "test:extension-auth": "node chrome-extension/fixtures/background-auth.test.mjs && ORBIT_TEST_API_ORIGIN=http://localhost:8787 ORBIT_TEST_APP_ORIGIN=http://localhost:5173 node chrome-extension/fixtures/background-auth.test.mjs",
+    "test:extension-ui": "node --check chrome-extension/sidepanel.js && node --check chrome-extension/content-script.js && node chrome-extension/fixtures/ui-contract.test.mjs",
+    "test:calendar": "vp exec tsx --test src/lib/calendar.test.ts",
+    "test:crm-utils": "vp exec tsx --test server/crm-utils.test.ts",
+    "test:crm": "vp exec node --env-file-if-exists=.env --import tsx --test server/crm-api.test.ts server/crm-transfer.test.ts",
+    "test:agent": "vp exec node --env-file-if-exists=.env --import tsx --test server/agent-api.test.ts server/agent-access.test.ts",
+    "test:unit": "vp exec tsx --test server/crm-utils.test.ts src/lib/calendar.test.ts src/lib/crm-transfer.test.ts server/public-config.test.ts src/lib/userorbit.test.ts server/node-frontend.test.ts src/components/icons.test.tsx",
+    "test:mail": "vp exec tsx --test server/mail-provider.test.ts server/mail-ingress.test.ts server/mail-backend.test.ts server/mail-security.test.ts",
+    "test:workspaces": "vp exec tsx --test server/workspace-auth.test.ts",
+    "test:all": "vp run test:unit && vp run test:crm && vp run test:agent && vp run test:extension-auth && vp run test:extension-ui && vp run test:mail && vp run test:workspaces",
+    "deploy:check": "node scripts/deploy-cloudflare.mjs --dry-run",
+    "test:deployment": "node --test scripts/cloudflare-config.test.mjs scripts/configure-extension.test.mjs scripts/prepare-worker-assets.test.mjs",
+    "release:prepare": "node scripts/prepare-release.mjs",
+    "test:security": "vp exec tsx --test server/auth-rate-limit.test.ts server/content-research-security.test.ts",
+    "test:installation": "vp exec tsx --test server/database-setup.test.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.19.9",
+    "csv-parse": "^7.0.2",
+    "exceljs": "^4.4.0",
+    "hash-wasm": "^4.12.0",
+    "hono": "^4.10.7",
+    "lucide-react": "^1.58.0",
+    "markdown-it": "^15.0.0",
+    "postal-mime": "^3.0.0",
+    "postgres": "^3.4.7",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-router-dom": "^7.12.0",
+    "userorbit-js": "^0.0.8",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260916.1",
+    "@types/markdown-it": "^14.1.2",
+    "@types/node": "^24.10.4",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "latest",
+    "concurrently": "^9.2.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vite-plus": "^0.1.12",
+    "wrangler": "^4.132.0"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@10.32.1",
+  "cloudflare": {
+    "bindings": {
+      "DATABASE_URL": {
+        "description": "PostgreSQL connection URL for your own empty database. Keep it secret. Orbit applies migrations on first API request."
+      },
+      "BOOTSTRAP_EMAIL": {
+        "description": "Email for the initial founder login."
+      },
+      "BOOTSTRAP_NAME": {
+        "description": "Name for the initial founder account."
+      },
+      "BOOTSTRAP_PASSWORD": {
+        "description": "Unique random password of at least 12 characters for the initial founder."
+      },
+      "USERORBIT_ACCOUNT_ID": {
+        "description": "Your Userorbit account ID to enable the included widget. Leave blank to configure later."
+      }
+    }
+  }
+}
