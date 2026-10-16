@@ -1,0 +1,5 @@
+# Cloudflare deploy-button secret prompts; never commit filled values.
+DATABASE_URL=
+BOOTSTRAP_EMAIL=
+BOOTSTRAP_NAME=
+BOOTSTRAP_PASSWORD=

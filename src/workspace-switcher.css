@@ -1,0 +1,103 @@
+.workspace-switcher-trigger {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.workspace-switcher-trigger:focus-visible {
+  outline: none;
+  border-radius: 7px;
+  box-shadow: var(--focus);
+}
+
+.workspace-switcher-trigger .workspace-chevron {
+  flex: 0 0 auto;
+  transition: color 120ms ease-out;
+}
+
+.workspace-switcher-trigger:hover .workspace-chevron {
+  color: var(--text-primary);
+}
+
+.workspace-switcher-list {
+  display: grid;
+  gap: 4px;
+}
+
+.workspace-switcher-option,
+.workspace-switcher-create {
+  display: flex;
+  width: 100%;
+  min-height: 44px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.workspace-switcher-option:hover,
+.workspace-switcher-create:hover {
+  background: var(--bg-tertiary);
+}
+
+.workspace-switcher-option[aria-current="true"] {
+  background: var(--bg-tertiary);
+}
+
+.workspace-switcher-option > span {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+.workspace-switcher-option strong {
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 590;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workspace-switcher-option > svg {
+  flex: 0 0 auto;
+  color: var(--green);
+}
+
+.workspace-switcher-create {
+  justify-content: flex-start;
+  margin-top: 4px;
+  color: var(--text-secondary);
+  border-top: 0.5px solid var(--border-primary);
+  border-radius: 0 0 7px 7px;
+}
+
+.workspace-switcher-loading {
+  display: flex;
+  min-height: 96px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--text-tertiary);
+}
+
+.invite-auth-note {
+  padding: 10px 12px;
+  border: 0.5px solid var(--border-primary);
+  border-radius: 7px;
+  color: var(--text-secondary);
+  background: var(--bg-tertiary);
+  font-size: 13px;
+}

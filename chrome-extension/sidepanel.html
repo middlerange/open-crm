@@ -1,0 +1,249 @@
+<!doctype html>
+<!-- Icons: Lucide ISC/MIT, see Lucide-LICENSE. -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orbit Lead Collector</title>
+    <link rel="stylesheet" href="sidepanel.css" />
+  </head>
+  <body>
+    <main>
+      <header class="app-header">
+        <img class="brand" src="orbit-mark.svg" alt="" aria-hidden="true" />
+        <div class="header-copy">
+          <h1>Social leads</h1>
+          <p>LinkedIn engagement</p>
+        </div>
+        <button id="account-trigger" class="account-trigger" aria-expanded="false" hidden>
+          <span>
+            <strong id="connected-user"></strong>
+            <small id="connected-workspace"></small>
+          </span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="-4 -4 32 32"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="m6 9 6 6 6-6"></path>
+          </svg>
+        </button>
+        <div id="account-menu" class="menu-popover account-menu" hidden>
+          <button id="open-queue" class="menu-item">Open lead queue</button>
+          <button id="reconnect" class="menu-item">Reconnect Orbit</button>
+          <span class="menu-separator"></span>
+          <button id="disconnect" class="menu-item danger-item">Disconnect</button>
+        </div>
+      </header>
+
+      <section id="loading" class="loading-card" aria-live="polite">
+        <div class="loading-row" role="status">
+          <span class="spinner" aria-hidden="true"></span>
+          Connecting to Orbit…
+        </div>
+      </section>
+
+      <section id="setup" class="card" hidden>
+        <h2>Sign in to Orbit</h2>
+        <p class="muted">
+          If you are already signed in to your Orbit workspace, Orbit connects automatically.
+          Otherwise this button opens the login page.
+        </p>
+        <p id="setup-error" class="setup-error" role="alert" hidden></p>
+        <button id="connect" class="primary">Log in to Orbit</button>
+      </section>
+
+      <section id="collector" hidden>
+        <section id="post-context" class="post-card" aria-live="polite">
+          <div class="eyebrow">Selected LinkedIn post</div>
+          <h2 id="post-author">Choose a post</h2>
+          <p id="post-copy">Use the Orbit leads button beneath a LinkedIn post to target it.</p>
+          <div id="post-stats" class="post-stats" hidden>
+            <span id="post-reactions">0 reactions</span>
+            <span id="post-comments">0 comments</span>
+            <span id="post-reposts">0 reposts</span>
+          </div>
+          <a id="view-post" class="view-post" href="#" target="_blank" rel="noreferrer" hidden>
+            View source
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="-4 -4 32 32"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M7 7h10v10"></path>
+              <path d="M7 17 17 7"></path>
+            </svg>
+          </a>
+        </section>
+
+        <label>
+          Competitor or source
+          <input id="competitor-name" maxlength="180" placeholder="e.g. Canny" />
+        </label>
+        <div class="scan-actions">
+          <button id="scan" class="primary scan-primary" disabled>
+            <span class="scan-label">Collect engagement</span>
+          </button>
+          <button
+            id="scan-mode-trigger"
+            class="scan-mode-trigger"
+            aria-label="Choose scan mode"
+            aria-expanded="false"
+            disabled
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="-4 -4 32 32"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="m6 9 6 6 6-6"></path>
+            </svg>
+          </button>
+          <div id="scan-mode-menu" class="menu-popover scan-mode-menu" hidden>
+            <button class="menu-item" data-scan-mode="both">
+              <span>Reactions & comments</span><span class="mode-check">✓</span>
+            </button>
+            <button class="menu-item" data-scan-mode="reactions">
+              <span>Reactions only</span><span class="mode-check"></span>
+            </button>
+            <button class="menu-item" data-scan-mode="comments">
+              <span>Comments only</span><span class="mode-check"></span>
+            </button>
+          </div>
+        </div>
+        <p class="hint">
+          Orbit opens the reactions list and loads available commenters and reactors into this
+          panel. LinkedIn may briefly show a dialog while collection runs.
+        </p>
+
+        <p id="status" role="status" aria-live="polite" aria-atomic="true"></p>
+
+        <section id="results" class="results-card" hidden>
+          <div class="result-heading">
+            <div>
+              <strong id="result-count">0 people</strong>
+              <span id="result-breakdown"></span>
+            </div>
+            <button id="clear" class="text-button">Clear results</button>
+          </div>
+          <p id="warnings" class="warning" role="alert" hidden></p>
+          <div id="result-empty" class="result-empty" hidden>
+            <strong>No people found</strong>
+            <span>Open the post in its own page and try collecting again.</span>
+            <button id="clear-filters" class="text-button" hidden>Clear filters</button>
+          </div>
+          <div id="result-controls">
+            <div class="result-toolbar">
+              <div class="search-control">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="-4 -4 32 32"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="m21 21-4.34-4.34"></path>
+                  <circle cx="11" cy="11" r="8"></circle>
+                </svg>
+                <input
+                  id="search"
+                  type="search"
+                  aria-label="Filter captured people"
+                  placeholder="Filter people…"
+                />
+                <button id="clear-search" class="clear-search" aria-label="Clear search" hidden>
+                  ×
+                </button>
+              </div>
+              <div class="select-control-wrap">
+                <button
+                  id="type-filter"
+                  class="select-trigger"
+                  role="combobox"
+                  aria-expanded="false"
+                  aria-controls="type-options"
+                  data-value=""
+                >
+                  <span>All signals</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="-4 -4 32 32"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="m6 9 6 6 6-6"></path>
+                  </svg>
+                </button>
+                <div id="type-options" class="menu-popover select-options" role="listbox" hidden>
+                  <button class="menu-item" role="option" aria-selected="true" data-type="">
+                    <span>All signals</span><span>✓</span>
+                  </button>
+                  <button class="menu-item" role="option" aria-selected="false" data-type="comment">
+                    <span>Comments</span><span></span>
+                  </button>
+                  <button
+                    class="menu-item"
+                    role="option"
+                    aria-selected="false"
+                    data-type="reaction"
+                  >
+                    <span>Reactions</span><span></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="selection-row">
+              <span id="selected-count">0 selected</span>
+              <button id="toggle-all" class="text-button">Select all</button>
+            </div>
+            <div id="preview" role="list" aria-label="Captured people"></div>
+            <button id="load-more" class="text-button load-more" hidden>Load more</button>
+            <div class="result-actions">
+              <button id="export">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="-4 -4 32 32"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M12 15V3"></path>
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <path d="m7 10 5 5 5-5"></path>
+                </svg>
+                Export
+              </button>
+              <button id="save" class="primary">Save selected to Orbit</button>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+    <script src="sidepanel.js"></script>
+  </body>
+</html>
