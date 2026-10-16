@@ -159,7 +159,7 @@ export async function ensureBootstrap() {
   const passwordHash = await hashPassword(config.BOOTSTRAP_PASSWORD);
 
   const created = await sql.begin(async (transaction) => {
-    await transaction`SELECT pg_advisory_xact_lock(72401602)`;
+    await transaction`LOCK TABLE workspaces IN EXCLUSIVE MODE`;
     const [{ count: workspaceCount }] = await transaction<{ count: number }[]>`
       SELECT count(*)::int AS count FROM workspaces
     `;

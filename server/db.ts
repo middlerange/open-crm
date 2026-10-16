@@ -7,13 +7,11 @@ type SqlClient = ReturnType<typeof postgres>;
 const requestDatabase = new AsyncLocalStorage<SqlClient>();
 
 function createClient(connectionString: string) {
-  const hostname = new URL(connectionString).hostname.toLowerCase();
-  const connectsThroughHyperdrive = hostname === "hyperdrive.local";
   return postgres(connectionString, {
     max: 5,
     idle_timeout: 20,
     connect_timeout: 10,
-    ssl: connectsThroughHyperdrive || config.DATABASE_SSL === "disable" ? false : "require",
+    ssl: config.DATABASE_SSL === "disable" ? false : "require",
     fetch_types: true,
     onnotice: () => undefined,
   });

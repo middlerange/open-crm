@@ -6,7 +6,7 @@ Reviewed October 16, 2026. The clean source is published at https://github.com/m
 
 - Generic Cloudflare configuration with environment-driven Worker name, domains, redirects, mailbox mappings, Hyperdrive, and Userorbit account.
 - Separate allowlists for runtime values and secrets, ignored private configuration, and dry-run deployment command.
-- Bundled SQL migrations and automatic first-request founder bootstrap; concurrent setup uses PostgreSQL advisory locks.
+- Bundled SQL migrations and automatic first-request founder bootstrap; concurrent setup uses transaction-scoped PostgreSQL table locks.
 - Configurable Userorbit widget retained, with runtime public configuration and scoped content-security policy.
 - PostgreSQL-backed authentication throttling, including invitation password verification.
 - Internal research omitted by default, role-protected when explicitly enabled, and excluded from source exports.

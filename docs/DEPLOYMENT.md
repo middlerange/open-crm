@@ -61,7 +61,7 @@ A different environment file can be passed as `vp run deploy path/to/environment
 | `SESSION_COOKIE_NAME`                                     | Default `orbit_session`.                                                                                                                |
 | `DATABASE_SSL`                                            | `require` by default. `disable` is only for trusted local/private connections. Hyperdrive transport is handled separately.              |
 
-For a custom domain, set `APP_ORIGIN` and `ORBIT_CUSTOM_DOMAINS` together. Keep the same Worker name and database when upgrading. Back up PostgreSQL before upgrading. On the first API request to a new Worker version, bundled SQL migrations are applied under a PostgreSQL advisory lock. Existing installations keep their users and data. Startup errors return a generic 503 without credentials or SQL details.
+For a custom domain, set `APP_ORIGIN` and `ORBIT_CUSTOM_DOMAINS` together. Keep the same Worker name and database when upgrading. Back up PostgreSQL before upgrading. On the first API request to a new Worker version, bundled SQL migrations are applied under a transaction-scoped PostgreSQL table lock. Existing installations keep their users and data. Startup errors return a generic 503 without credentials or SQL details.
 
 After bootstrap, remove the bootstrap password secret from the Worker if desired; an existing installation does not require it. Never expose a database with unrestricted network access just to satisfy a deploy button.
 

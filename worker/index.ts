@@ -52,7 +52,13 @@ type WorkerEnvironment = {
 function prepareRuntime(environment: WorkerEnvironment) {
   const databaseUrl = environment.HYPERDRIVE?.connectionString ?? environment.DATABASE_URL;
   if (!databaseUrl) throw new Error("Configure DATABASE_URL or a HYPERDRIVE binding.");
-  configureRuntime({ ...environment, DATABASE_URL: databaseUrl, NODE_ENV: "production" });
+  configureRuntime({
+    ...environment,
+    DATABASE_URL: databaseUrl,
+    // Hyperdrive encrypts its origin connection; its Worker-side socket uses its own transport.
+    DATABASE_SSL: environment.HYPERDRIVE ? "disable" : environment.DATABASE_SSL,
+    NODE_ENV: "production",
+  });
   return databaseUrl;
 }
 

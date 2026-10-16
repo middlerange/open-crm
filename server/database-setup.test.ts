@@ -6,11 +6,12 @@ test(
   "fresh database setup is safe under concurrent first requests",
   {
     skip: !process.env.ORBIT_INSTALL_TEST_DATABASE_URL,
+    timeout: 30_000,
   },
   async () => {
     const { configureRuntime } = await import("./config.js");
     const { configureDatabase, sql, closeDatabase } = await import("./db.js");
-    const { initializeDatabase } = await import("./database-setup.js");
+    const { initializeDatabase, applyMigrations } = await import("./database-setup.js");
     const { runMigrations } = await import("./migrate.js");
     const databaseUrl = process.env.ORBIT_INSTALL_TEST_DATABASE_URL!;
     configureRuntime({
@@ -58,6 +59,31 @@ test(
         tasks: 6,
         migrations: migrations.length,
       });
+      await assert.rejects(
+        applyMigrations([
+          {
+            version: "installation-test-failed.sql",
+            sql: "CREATE TABLE installation_rollback_probe (id integer); SELECT * FROM installation_missing_relation;",
+          },
+        ]),
+        (error: unknown) => error instanceof Error && "code" in error && error.code === "42P01",
+      );
+      const [rolledBack] = await sql`
+        SELECT to_regclass('installation_rollback_probe') AS relation,
+          (SELECT count(*)::int FROM schema_migrations WHERE version = 'installation-test-failed.sql') AS recorded
+      `;
+      assert.deepEqual(rolledBack, { relation: null, recorded: 0 });
+
+      const upgrade = {
+        version: "installation-test-upgrade.sql",
+        sql: "CREATE TABLE installation_upgrade_probe (id integer); INSERT INTO installation_upgrade_probe VALUES (1);",
+      };
+      await Promise.all(Array.from({ length: 8 }, () => applyMigrations([...migrations, upgrade])));
+      const [upgraded] = await sql`
+        SELECT (SELECT count(*)::int FROM installation_upgrade_probe) AS rows,
+          (SELECT count(*)::int FROM schema_migrations WHERE version = ${upgrade.version}) AS recorded
+      `;
+      assert.deepEqual(upgraded, { rows: 1, recorded: 1 });
     } finally {
       await closeDatabase();
     }
