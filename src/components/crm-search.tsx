@@ -105,6 +105,7 @@ export function CrmQuickSearch() {
     <>
       <Button
         className="global-search-trigger"
+        aria-label="Search CRM"
         aria-keyshortcuts="Meta+K Control+K"
         onClick={() => setOpen(true)}
       >
